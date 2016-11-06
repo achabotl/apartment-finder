@@ -31,20 +31,19 @@ class Listing(Base):
     location = Column(String)
     cl_id = Column(Integer, unique=True)
     area = Column(String)
-    bart_stop = Column(String)
+    grocery_store = Column(String)
 
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def scrape_area(area):
+def scrape_area():
     """
     Scrapes craigslist for a certain geographic area, and finds the latest listings.
-    :param area:
     :return: A list of results.
     """
-    cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE, area=area, category=settings.CRAIGSLIST_HOUSING_SECTION,
+    cl_h = CraigslistHousing(site=settings.CRAIGSLIST_SITE, category=settings.CRAIGSLIST_HOUSING_SECTION,
                              filters={'max_price': settings.MAX_PRICE, "min_price": settings.MIN_PRICE})
 
     results = []
@@ -118,9 +117,7 @@ def do_scrape():
     sc = SlackClient(settings.SLACK_TOKEN)
 
     # Get all the results from craigslist.
-    all_results = []
-    for area in settings.AREAS:
-        all_results += scrape_area(area)
+    all_results = scrape_area()
 
     print("{}: Got {} results".format(time.ctime(), len(all_results)))
 

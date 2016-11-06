@@ -75,7 +75,7 @@ def scrape_area():
                 result.update(geo_data)
             else:
                 result["area"] = ""
-                result["bart"] = ""
+                result["grocery"] = ""
 
             # Try parsing the price.
             price = 0
@@ -95,15 +95,15 @@ def scrape_area():
                 location=result["where"],
                 cl_id=result["id"],
                 area=result["area"],
-                bart_stop=result["bart"]
+                grocery_store=result["grocery"]
             )
 
             # Save the listing so we don't grab it again.
             session.add(listing)
             session.commit()
 
-            # Return the result if it's near a bart station, or if it is in an area we defined.
-            if len(result["bart"]) > 0 or len(result["area"]) > 0:
+            # Return the result if it's near a grocery store, or if it is in an area we defined.
+            if len(result["grocery"]) > 0 or len(result["area"]) > 0:
                 results.append(result)
 
     return results

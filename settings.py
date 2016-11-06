@@ -80,17 +80,23 @@ NEIGHBORHOODS = ["berkeley north", "berkeley", "rockridge", "adams point", "oakl
 ## Transit preferences
 
 # The farthest you want to live from a transit stop.
-MAX_TRANSIT_DIST = 2 # kilometers
+MAX_GROCERY_DIST = 2  # kilometers
 
 # Transit stations you want to check against.  Every coordinate here will be checked against each listing,
 # and the closest station name will be added to the result and posted into Slack.
-TRANSIT_STATIONS = {
+GROCERY_STORE = {
     "oakland_19th_bart": [37.8118051,-122.2720873],
     "macarthur_bart": [37.8265657,-122.2686705],
     "rockridge_bart": [37.841286,-122.2566329],
     "downtown_berkeley_bart": [37.8629541,-122.276594],
     "north_berkeley_bart": [37.8713411,-122.2849758]
 }
+
+# Maximum distance to office
+MAX_WORK_DIST = 8  # km
+
+# Office location
+WORK_COORDS = [30.267755, -97.742680]
 
 ## Search type preferences
 

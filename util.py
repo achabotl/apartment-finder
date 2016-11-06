@@ -35,7 +35,13 @@ def post_listing_to_slack(sc, listing):
     :param sc: A slack client.
     :param listing: A record of the listing.
     """
-    desc = "{0} | {1} | {2} | {3} | <{4}>".format(listing["area"], listing["price"], listing["bart_dist"], listing["name"], listing["url"])
+    desc = "{area} | {price} | {grocery_dist} | {work_dist} | {name} | <{url}>".format(
+        area=listing["area"],
+        price=listing["price"],
+        grocery_dist=listing["grocery_dist"],
+        work_dist=listing['work_dist'],
+        name=listing["name"],
+        url=listing["url"])
     sc.api_call(
         "chat.postMessage", channel=settings.SLACK_CHANNEL, text=desc,
         username='pybot', icon_emoji=':robot_face:'
@@ -52,24 +58,35 @@ def find_points_of_interest(geotag, location):
     area_found = False
     area = ""
     min_dist = None
-    near_bart = False
-    bart_dist = "N/A"
-    bart = ""
+    near_grocery = False
+    grocery_dist = "N/A"
+    grocery = ""
+    work_min_dist = None
+    near_work = False
+    work_dist = "N/A"
     # Look to see if the listing is in any of the neighborhood boxes we defined.
     for a, coords in settings.BOXES.items():
         if in_box(geotag, coords):
             area = a
             area_found = True
 
-    # Check to see if the listing is near any transit stations.
-    for station, coords in settings.TRANSIT_STATIONS.items():
+    # Check to see if the listing is near any grocery store.
+    for station, coords in settings.GROCERY_STORE.items():
         dist = coord_distance(coords[0], coords[1], geotag[0], geotag[1])
-        if (min_dist is None or dist < min_dist) and dist < settings.MAX_TRANSIT_DIST:
-            bart = station
-            near_bart = True
+        if (min_dist is None or dist < min_dist) and dist < settings.MAX_GROCERY_DIST:
+            grocery = station
+            near_grocery = True
 
-        if (min_dist is None or dist < min_dist):
-            bart_dist = dist
+        if min_dist is None or dist < min_dist:
+            grocery_dist = dist
+
+    # Check how from from work
+    dist = coord_distance(settings.WORK_COORDS[0], settings.WORK_COORDS[1], geotag[0], geotag[1])
+    if (work_min_dist is None or dist < work_min_dist) and dist < settings.MAX_WORK_DIST:
+        near_work = True
+    if work_min_dist is None or dist < work_min_dist:
+        work_dist = dist
+
 
     # If the listing isn't in any of the boxes we defined, check to see if the string description of the neighborhood
     # matches anything in our list of neighborhoods.
@@ -81,7 +98,9 @@ def find_points_of_interest(geotag, location):
     return {
         "area_found": area_found,
         "area": area,
-        "near_bart": near_bart,
-        "bart_dist": bart_dist,
-        "bart": bart
+        "near_grocery": near_grocery,
+        "grocery_dist": grocery_dist,
+        "grocery": grocery,
+        "new_work": near_work,
+        "work_dist": work_dist,
     }

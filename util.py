@@ -35,7 +35,7 @@ def post_listing_to_slack(sc, listing):
     :param sc: A slack client.
     :param listing: A record of the listing.
     """
-    desc = "{area} | {price} | {grocery_dist} | {work_dist} | {name} | <{url}>".format(
+    desc = "{area} | {price} | Grocery: {grocery_dist:.1f} km | Work: {work_dist:.1f} km | {name} | <{url}>".format(
         area=listing["area"],
         price=listing["price"],
         grocery_dist=listing["grocery_dist"],
